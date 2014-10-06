@@ -1,3 +1,5 @@
+#include "minic.h"
+
 CPU::CPU()
 {
     reset();

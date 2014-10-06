@@ -1,4 +1,4 @@
-#include "minic.h"
+#include "minic.cpp"
 
 int main(int argc, char* argv[])
 {
