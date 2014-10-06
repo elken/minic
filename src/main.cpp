@@ -1,38 +1,35 @@
-#include "minic.cpp"
-#include <fstream>
-#include <string>
-#include <cstdio>
+#include "minic.h"
 
-int main()
+int main(int argc, char* argv[])
 {
-  m::CPU* c = new m::CPU();
-  
-  std::vector<byte> inst;
-  std::ifstream asm_f("test.asm");
+    CPU* c = new CPU();
 
-  if(asm_f.is_open())
-  {
-    std::string line;
-    while(getline(asm_f, line))
+    if(argc == 2)
     {
-      byte l = *line.c_str();
-      std::cout << l << std::endl;
-      inst.push_back(line.c_str());
-    }
-    std::cout << "Loaded." << std::endl;
-    c->execute(inst);
-    std::cout << "Executed." << std::endl;
+        std::ifstream asm_f(argv[1]);
 
-    for(auto i:inst)
+        std::vector<char> inst = c->load(asm_f);
+
+        std::cout << "Loaded." << std::endl;
+        c->execute(inst);
+        std::cout << "Executed." << std::endl;
+
+        for(auto j:inst)
+        {
+            std::cout << "[" << static_cast<int>(j) << "]" << std::endl;
+        }
+
+
+        std::cout << "Done." << std::endl;
+
+        delete c;
+        asm_f.close();
+
+        return 0;
+    }
+    else
     {
-      std::cout << "[" << static_cast<int>((i)) << "]" << std::endl;
+        std::cerr << "Usage: " << argv[0] << " <filename> " << std::endl;
     }
-  }
 
-  std::cout << "Done." << std::endl;
-  
-  delete c;
-  asm_f.close();
-
-  return 0;
 }

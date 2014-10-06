@@ -3,50 +3,50 @@
 #include <iostream>
 #include <cstdio>
 #include <vector>
+#include <fstream>
+#include <cstring>
+#include <string>
 
-typedef unsigned char byte;
-
-namespace m
+class CPU
 {
-    class CPU
-    {
-     public:
-      CPU();
-      ~CPU();
 
-      byte R0;
-      byte R1;
+public:
+    CPU();
+    ~CPU();
 
-      bool status;
-      bool overflow;
-      bool underflow;
+    char R0;
+    char R1;
 
-      byte PC;
-      byte IR;
+    bool status;
+    bool overflow;
+    bool underflow;
 
-      int tmp;
+    char PC;
+    char IR;
 
-      void reset();
-      void execute(std::vector<byte>& prog);
-      void fault();
-      void dumpRegisters();
-      void load0(std::vector<byte>& prog);
-      void load1(std::vector<byte>& prog);
-      void add();
-      void sub();
-      void store0(std::vector<byte>& prog);
-      void store1(std::vector<byte>& prog);
-    };
+    int tmp;
 
-    enum InstructionSet
-    {  
-      LOAD0 = 0,
-      LOAD1,
-      ADD,
-      SUBTRACT,
-      STORE0,
-      STORE1
-    };
-}
+    void reset();
+    void execute(std::vector<char>& prog);
+    std::vector<char> load(std::ifstream &stream);
+    void fault();
+    void dumpRegisters();
+    void load0(std::vector<char>& prog);
+    void load1(std::vector<char>& prog);
+    void add();
+    void sub();
+    void store0(std::vector<char>& prog);
+    void store1(std::vector<char>& prog);
+};
+
+enum InstructionSet
+{
+    LOAD0 = 0,
+    LOAD1,
+    ADD,
+    SUB,
+    STORE0,
+    STORE1
+};
 
 #endif //MINIC_H
