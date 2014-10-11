@@ -1,4 +1,6 @@
 #include "minic.h"
+#include <limits>
+#include <deque>
 
 CPU::CPU()
 {
@@ -15,7 +17,7 @@ void CPU::reset()
     overflow = underflow = false;
 }
 
-void CPU::execute(std::vector<char>& prog)
+void CPU::execute(std::vector<char *>& prog)
 {
     reset();
 
@@ -27,7 +29,7 @@ void CPU::execute(std::vector<char>& prog)
     {
         while (PC < prog.size())
         {
-            IR = prog[PC];
+            IR = *prog[PC];
             PC++;
 
         switch(IR)
@@ -69,14 +71,26 @@ void CPU::execute(std::vector<char>& prog)
     }
 }
 
-std::vector<char> CPU::load(std::ifstream &stream)
+std::vector<char *> CPU::load(std::ifstream &stream)
 {
-    std::vector<char> inst;
+    std::vector<char *> inst;
     if(stream.is_open()) {
         std::string op;
-        int x;
-        while (stream >> op) {
-            if (op == "LOAD0") {
+
+        std::deque<std::string> stack;
+        while (std::getline(stream, op)) {
+            op.erase(op.begin(), find_if(op.begin(), op.end(), not1(std::ptr_fun<int, int>(isspace))));
+
+            if(op[0]==';')
+            {
+                continue;
+            }
+
+            stack.push_back(op);
+
+
+/*
+            else if (op == "LOAD0") {
                 stream.seekg(-5, std::ios::cur);
                 stream >> op >> x;
                 std::cout << "opcode: " << op << "\nvalue: " << x << std::endl;
@@ -111,9 +125,29 @@ std::vector<char> CPU::load(std::ifstream &stream)
                 std::cout << "opcode: " << op << "\nvalue: " << x << std::endl;
                 inst.push_back(STORE1);
                 inst.push_back(x);
+            }*/
+        }
+        for(auto i:stack)
+        {
+//            std::cout << i.c_str() << std::endl;
+
+            std::size_t found = i.find_first_of(" ");
+            if(found!=std::string::npos)
+            {
+                std::cout << i << std::endl;
+                char *opcode = const_cast<char *>(i.substr(0, found).c_str());
+                std::cout << "Opcodes: " << opcode << std::endl;
+                inst.push_back(opcode);
+
+                char *vals = const_cast<char *>(i.substr(found, i.length()).c_str());
+                std::cout << "Vals: " << vals << std::endl;
+                inst.push_back(vals);
+                break;
             }
-            else
-                std::cout << "Opcode [" << op << "] is not part of this instruction set." << std::endl;
+            else if(found==std::string::npos)
+                std::cout << i << std::endl;
+
+
         }
     }
     return inst;
@@ -130,15 +164,15 @@ void CPU::dumpRegisters()
     printf("0: [%hhu]\n1: [%hhu]\nStatus: [%s]\nOverflow: [%s]\nUnderflow: [%s]\nPC: %hhu\nIR: [%hhu]\ntmp: [%d]\n", R0, R1, status?"true":"false", overflow?"true":"false", underflow?"true":"false", PC, IR, tmp);
 }
 
-void CPU::load0(std::vector<char>& prog)
+void CPU::load0(std::vector<char *>& prog)
 {
-    R0 = prog[PC];
+    R0 = *prog[PC];
     PC++;
 }
 
-void CPU::load1(std::vector<char>& prog)
+void CPU::load1(std::vector<char *>& prog)
 {
-    R1 = prog[PC];
+    R1 = *prog[PC];
     PC++;
 }
 
@@ -166,15 +200,14 @@ void CPU::sub()
     }
 }
 
-void CPU::store0(std::vector<char>& prog)
+void CPU::store0(std::vector<char *>& prog)
 {
-    prog[PC] = R0;
+    *prog[PC] = R0;
     PC++;
 }
 
-void CPU::store1(std::vector<char>& prog)
+void CPU::store1(std::vector<char *>& prog)
 {
-    prog[PC] = R1;
+    *prog[PC] = R1;
     PC++;
 }
-

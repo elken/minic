@@ -1,3 +1,4 @@
+; Comment test
 LOAD0 1
 LOAD1 7
 ADD

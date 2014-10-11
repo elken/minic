@@ -6,6 +6,9 @@
 #include <fstream>
 #include <cstring>
 #include <string>
+#include <sstream>
+#include <algorithm>
+#include <cstddef>
 
 class CPU
 {
@@ -26,17 +29,19 @@ public:
 
     int tmp;
 
+    std::vector<std::string> LUT = {"LOAD0", "LOAD1", "ADD", "SUB", "STORE0", "STORE1"};
+
     void reset();
-    void execute(std::vector<char>& prog);
-    std::vector<char> load(std::ifstream &stream);
+    void execute(std::vector<char *>& prog);
+    std::vector<char *> load(std::ifstream &stream);
     void fault();
     void dumpRegisters();
-    void load0(std::vector<char>& prog);
-    void load1(std::vector<char>& prog);
+    void load0(std::vector<char *>& prog);
+    void load1(std::vector<char *>& prog);
     void add();
     void sub();
-    void store0(std::vector<char>& prog);
-    void store1(std::vector<char>& prog);
+    void store0(std::vector<char *>& prog);
+    void store1(std::vector<char *>& prog);
 };
 
 enum InstructionSet

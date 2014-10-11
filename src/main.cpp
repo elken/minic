@@ -8,7 +8,7 @@ int main(int argc, char* argv[])
     {
         std::ifstream asm_f(argv[1]);
 
-        std::vector<char> inst = c->load(asm_f);
+        std::vector<char *> inst = c->load(asm_f);
 
         std::cout << "Loaded." << std::endl;
         c->execute(inst);
@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
 
         for(auto j:inst)
         {
-            std::cout << "[" << static_cast<int>(j) << "]" << std::endl;
+            std::cout << "[" << (j) << "]" << std::endl;
         }
 
 
